@@ -1,0 +1,68 @@
+// 1.maven-插件
+//maven插件在gradel7.0 已删除
+apply plugin: 'maven-publish'
+
+//如何打包发布
+//1. 打包到本地仓库
+// 1.1 在对应lib工程右侧菜单Gradle 选择Tasks任务
+// 1.2 打开publishing文件夹
+// publish   打包所有到repo仓库
+// publishToMavenLocal   打包所有到本都Maven仓库
+// publishAllPublicationsToLibToolsRepository 将所有出版物发布到 LibTools 存储库
+// publishReleaseTypePublicationToLibToolsRepository 打包发布版到远程Maven仓库
+// publishReleaseTypePublicationToMavenLocal  打包发布版到本地仓库
+
+def account="lurui"
+def pwd="lr123456"
+def snapshotVersion="0.0.1-SNAPSHOT"
+def releaseVersion="0.0.2-RELEASE"
+def pluginGroupId="com.hysz.lib_network"
+def pluginArtifactId="lib_network"
+
+afterEvaluate {
+    publishing {
+        repositories {
+            // 本地仓库
+            maven {
+                name('LibNetWork')
+                url = uri("./../repo")
+            }
+            // 远程仓库 快照版
+            maven {
+                allowInsecureProtocol(true)
+                name('LibNetWork-Snapshot')
+                url = uri("http://nexus.ops.hyszsz.com/repository/android-plugin-snapshot/")//私有maven库地址
+                credentials {
+                    username = account
+                    password = pwd
+                }
+            }
+            // 远程仓库 发布版
+            maven {
+                allowInsecureProtocol(true)
+                name('LibNetWork-Release')
+                url = uri("http://nexus.ops.hyszsz.com/repository/android-plugin-release/")//私有maven库地址
+                credentials {
+                    username = account
+                    password = pwd
+                }
+            }
+        }
+        publications {
+            debugType(MavenPublication) {
+                from components.debug
+                groupId pluginGroupId
+                artifactId pluginArtifactId
+                version snapshotVersion
+            }
+            productRelease(MavenPublication) {
+                from components.release
+                groupId pluginGroupId
+                artifactId pluginArtifactId
+                version releaseVersion
+            }
+        }
+    }
+}
+
+

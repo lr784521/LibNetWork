@@ -1,0 +1,7 @@
+<resources>
+    <string name="net_error" translatable="false">Oops, lost the network</string>
+    <string name="net_data_error" translatable="false">Oops, lost data</string>
+    <string name="unknown_mistake" translatable="false">Unknown mistake</string>
+    <string name="net_success" translatable="false">Success</string>
+
+</resources>

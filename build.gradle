@@ -1,0 +1,50 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = '1.7.0'
+
+    repositories {
+        google()
+        mavenCentral()
+        maven{
+            allowInsecureProtocol = true
+            url 'https://maven.aliyun.com/nexus/content/groups/public/'}
+        maven {
+            allowInsecureProtocol = true
+            url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
+        }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.2.1"
+        //kotlin支持
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //事件注入
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.41'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven{
+            allowInsecureProtocol = true
+            url 'https://maven.aliyun.com/nexus/content/groups/public/'}
+        maven {
+            allowInsecureProtocol = true
+            credentials {
+                username "lurui"
+                password "lr123456"
+            }
+            url 'http://nexus.ops.hyszsz.com/repository/android-plugin-public/'
+        }
+        //必须添加 否则依赖aar文件后 无法访问内容
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
