@@ -37,11 +37,14 @@ import rxhttp.wrapper.cahce.CacheMode;
 public class RxHttpMag {
 
     private static volatile RxHttpMag instance;
+    //缓存路径
     private String cachePath = Environment.getExternalStorageDirectory().getPath()
             + "/Android/data/" + AppGlobalUtils.getApplication().getPackageName() + "/cache/";
-    @DefaultDomain() //设置为默认域名
+    //设置为默认域名
+    @DefaultDomain()
     public static String baseUrl = "";
-    private String REQUEST_ERROR_TAG="";//请求失败返回标识
+    //请求失败返回标识
+    private String REQUEST_ERROR_TAG="";
     private Map<String, String> header=new HashMap<>();
 
     public static RxHttpMag getInstance() {
@@ -63,9 +66,9 @@ public class RxHttpMag {
      * 缓存模式：先请求网络，请求成功，写入缓存并返回；否则读取缓存
      * 缓存生命周期：5天
      */
-    public void init(String baseUrl,boolean isDebug) {
+    public void init(String baseUrl,boolean isDebug,String requestErrorTag) {
         this.baseUrl=baseUrl;
-
+        this.REQUEST_ERROR_TAG=requestErrorTag;
         RxHttpPlugins.init(OkHttpMag.getInstance().getOkHttpClient())
                 .setDebug(isDebug)
                 .setCache(new File(cachePath), 10 * 1024 * 1024,
@@ -78,6 +81,14 @@ public class RxHttpMag {
      */
     public Map<String, String> getHeader() {
         return header;
+    }
+
+    /**
+     * 获取请求失败返回标识
+     * @return
+     */
+    public String getRequestErrorTag() {
+        return REQUEST_ERROR_TAG;
     }
 
     /**

@@ -5,7 +5,7 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.huayun.libnetwork"
@@ -41,13 +41,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //本地仓库/远程仓库使用方式
-//    implementation 'com.hysz.lib_tools:lib_tools:0.0.1-SNAPSHOT'
+    implementation 'com.hysz.lib_network:lib_network:0.0.1-SNAPSHOT'
     //aar直接依赖方式
 //    implementation(name: 'lib_tools-1.0.0', ext: 'aar')
 
-    implementation 'com.hysz.lib_tools:lib_tools:0.0.3-RELEASE'
-    implementation 'com.hysz.lib_network:lib_network:0.0.1-RELEASE'
-
+    implementation 'com.hysz.lib_tools:lib_tools:0.0.1-SNAPSHOT'
 
 //    implementation project(path: ':lib_network')
     implementation "com.google.dagger:hilt-android:2.42"//注入框架

@@ -31,6 +31,6 @@ public class MyApplication extends Application implements IApplication {
     public void onCreate() {
         super.onCreate();
         LogUtil.init(true,"=_=");
-        RxHttpMag.getInstance().init("https://app-api.yidaz.cn/yd-api-member/",false);
+        RxHttpMag.getInstance().init("https://app-api.yidaz.cn/yd-api-member/",false,"");
     }
 }

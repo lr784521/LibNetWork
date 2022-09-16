@@ -4,7 +4,7 @@ apply from: 'maven_config.gradle'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         minSdkVersion 23
@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //基础工具库
-    implementation 'com.hysz.lib_tools:lib_tools:0.0.7-RELEASE'
+    implementation 'com.hysz.lib_tools:lib_tools:0.0.1-SNAPSHOT'
     //rxhttp
     api "com.github.liujingxing.rxhttp:rxhttp:2.9.0"
     annotationProcessor "com.github.liujingxing.rxhttp:rxhttp-compiler:2.9.0"

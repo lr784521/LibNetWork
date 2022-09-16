@@ -32,6 +32,10 @@ allprojects {
             url 'https://maven.aliyun.com/nexus/content/groups/public/'}
         maven {
             allowInsecureProtocol = true
+            url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
+        }
+        maven {
+            allowInsecureProtocol = true
             credentials {
                 username "lurui"
                 password "lr123456"
