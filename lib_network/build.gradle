@@ -47,25 +47,24 @@ dependencies {
     //基础工具库
     implementation 'com.hysz.lib_tools:lib_tools:0.0.2-SNAPSHOT'
     //rxhttp
-    api "com.github.liujingxing.rxhttp:rxhttp:2.9.0"
+    implementation "com.github.liujingxing.rxhttp:rxhttp:2.9.0"
     annotationProcessor "com.github.liujingxing.rxhttp:rxhttp-compiler:2.9.0"
     //okhttp3
-    api "com.squareup.okhttp3:okhttp:4.10.0"
+    implementation "com.squareup.okhttp3:okhttp:4.10.0"
     //retrofit2
-    api "com.squareup.retrofit2:retrofit:2.3.0"
-    api "com.squareup.retrofit2:converter-gson:2.3.0"
-    api "com.squareup.retrofit2:converter-scalars:2.3.0"
-    api "com.squareup.retrofit2:adapter-rxjava:2.3.0"
+    implementation "com.squareup.retrofit2:retrofit:2.3.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    implementation "com.squareup.retrofit2:converter-scalars:2.3.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava:2.3.0"
     //rx生命周期管理
-    api "com.trello:rxlifecycle-components:0.6.1"
+    implementation "com.trello:rxlifecycle-components:0.6.1"
     //Rx系列
-    api "io.reactivex.rxjava3:rxandroid:3.0.0"
-    api "io.reactivex.rxjava3:rxjava:3.1.5"
-    api "com.github.liujingxing.rxlife:rxlife-rxjava3:2.2.2" //管理RxJava3生命周期，页面销毁，关闭请求
-    api "com.github.liujingxing.rxhttp:converter-fastjson:2.9.0"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation "io.reactivex.rxjava3:rxjava:3.1.5"
+    implementation "com.github.liujingxing.rxlife:rxlife-rxjava3:2.2.2" //管理RxJava3生命周期，页面销毁，关闭请求
+    implementation "com.github.liujingxing.rxhttp:converter-fastjson:2.9.0"
     //依赖注入框架
     implementation "com.google.dagger:hilt-android:2.42"
-    annotationProcessor "com.google.dagger:hilt-compiler:2.42"
     //事件通知
     implementation "org.greenrobot:eventbus-java:3.3.1"
 
