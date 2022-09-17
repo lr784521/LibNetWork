@@ -1,5 +1,7 @@
 package com.huayun.lib_network.okhtpp;
 
+import com.huayun.lib_network.util.RxHttpConfig;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
@@ -26,12 +28,9 @@ public class RequestStateCodeInterceptor implements Interceptor {
     }
 
     private void stateCode(int code) {
-        switch (code) {
-            case 401://token失效
-            case 666://需要更新
-                map.put("netStateCode", code);
-                EventBus.getDefault().post(map);
-                break;
+        if(RxHttpConfig.getInstance().getErrorCode().contains(code)){
+            map.put("netStateCode", code);
+            EventBus.getDefault().post(map);
         }
     }
 

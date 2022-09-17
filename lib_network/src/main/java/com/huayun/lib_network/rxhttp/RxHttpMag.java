@@ -1,7 +1,5 @@
 package com.huayun.lib_network.rxhttp;
 
-import android.os.Environment;
-
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -9,14 +7,11 @@ import com.huayun.lib_network.base_net.call.NetMergeCallBack;
 import com.huayun.lib_network.base_net.call.NetSingleCallBack;
 import com.huayun.lib_network.base_net.call.NetFileDownloadCallBack;
 import com.huayun.lib_network.base_net.call.NetFileUploadCallBack;
-import com.huayun.lib_network.okhttpImpl.OkHttpMag;
-import com.huayun.lib_tools.util.AppGlobalUtils;
-import com.huayun.lib_tools.util.log.LogUtil;
+import com.huayun.lib_network.util.RxHttpConfig;
 import com.rxjava.rxlife.RxLife;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +21,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
 import rxhttp.RxHttp;
-import rxhttp.RxHttpPlugins;
-import rxhttp.wrapper.annotation.DefaultDomain;
-import rxhttp.wrapper.cahce.CacheMode;
 
 /**
  * RxHttp管理
@@ -37,19 +29,12 @@ import rxhttp.wrapper.cahce.CacheMode;
 public class RxHttpMag {
 
     private static volatile RxHttpMag instance;
-    //缓存路径
-    private String cachePath = Environment.getExternalStorageDirectory().getPath()
-            + "/Android/data/" + AppGlobalUtils.getApplication().getPackageName() + "/cache/";
+    //网络框架配置
+    private RxHttpConfig netWorkConfig;
     //设置为默认域名
-    @DefaultDomain()
-    public static String baseUrl = "";
-    //请求失败返回标识
-    private String REQUEST_ERROR_TAG="";
-    private Map<String, String> header=new HashMap<>();
-
     public static RxHttpMag getInstance() {
         if (instance == null) {
-            synchronized (OkHttpMag.class) {
+            synchronized (RxHttpMag.class) {
                 if (instance == null) {
                     instance = new RxHttpMag();
                 }
@@ -58,37 +43,8 @@ public class RxHttpMag {
         return instance;
     }
 
-    /**
-     * 初始化RxHttp 配置OkHttpClient
-     * 缓存策略：
-     * 存储：内部缓存 同app卸载销毁
-     * 缓存大小：最大值10M，超出后根据LRU算法清理
-     * 缓存模式：先请求网络，请求成功，写入缓存并返回；否则读取缓存
-     * 缓存生命周期：5天
-     */
-    public void init(String baseUrl,boolean isDebug,String requestErrorTag) {
-        this.baseUrl=baseUrl;
-        this.REQUEST_ERROR_TAG=requestErrorTag;
-        RxHttpPlugins.init(OkHttpMag.getInstance().getOkHttpClient())
-                .setDebug(isDebug)
-                .setCache(new File(cachePath), 10 * 1024 * 1024,
-                        CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE, ((60 * 1000) * 60 * 24) * 5);
-    }
-
-    /**
-     * 获取请求头
-     * @return
-     */
-    public Map<String, String> getHeader() {
-        return header;
-    }
-
-    /**
-     * 获取请求失败返回标识
-     * @return
-     */
-    public String getRequestErrorTag() {
-        return REQUEST_ERROR_TAG;
+    private RxHttpMag(){
+        netWorkConfig= RxHttpConfig.getInstance();
     }
 
     /**
@@ -99,7 +55,7 @@ public class RxHttpMag {
      */
     public Disposable httpGet(String url, NetSingleCallBack callBack) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .subscribe(s -> {
                     //请求成功
@@ -119,7 +75,7 @@ public class RxHttpMag {
      */
     public void httpGet(LifecycleOwner owner, String url, NetSingleCallBack callBack) {
         RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
                 .subscribe(s -> {
@@ -141,7 +97,7 @@ public class RxHttpMag {
      */
     public Disposable httpGet(String url, Map<String, Object> params, NetSingleCallBack callBack) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .subscribe(s -> {
@@ -163,7 +119,7 @@ public class RxHttpMag {
      */
     public void httpGet(LifecycleOwner owner, String url, Map<String, Object> params, NetSingleCallBack callBack) {
         RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
@@ -185,12 +141,12 @@ public class RxHttpMag {
      */
     public Observable httpGet(String url) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
 
@@ -206,13 +162,13 @@ public class RxHttpMag {
      */
     public Observable httpGet(String url, Map<String, Object> params) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -226,7 +182,7 @@ public class RxHttpMag {
      */
     public Disposable httpPost(String url, NetSingleCallBack callBack) {
         return RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .subscribe(s -> {
                     //请求成功
@@ -245,7 +201,7 @@ public class RxHttpMag {
      */
     public void httpPost(LifecycleOwner owner, String url, NetSingleCallBack callBack) {
         RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
                 .subscribe(s -> {
@@ -267,7 +223,7 @@ public class RxHttpMag {
      */
     public Disposable httpPost(String url, Map<String, Object> params, NetSingleCallBack callBack) {
         return RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .subscribe(s -> {
@@ -289,7 +245,7 @@ public class RxHttpMag {
      */
     public void httpPost(LifecycleOwner owner, String url, Map<String, Object> params, NetSingleCallBack callBack) {
         RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
@@ -310,12 +266,12 @@ public class RxHttpMag {
      */
     public Observable httpPost(String url) {
         return RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -329,13 +285,13 @@ public class RxHttpMag {
      */
     public Observable httpPost(String url, Map<String, Object> params) {
         return RxHttp.postJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -349,7 +305,7 @@ public class RxHttpMag {
      */
     public Disposable httpPut(String url, NetSingleCallBack callBack) {
         return RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .subscribe(s -> {
                     //请求成功
@@ -368,7 +324,7 @@ public class RxHttpMag {
      */
     public void httpPut(LifecycleOwner owner, String url, NetSingleCallBack callBack) {
         RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
                 .subscribe(s -> {
@@ -390,7 +346,7 @@ public class RxHttpMag {
      */
     public Disposable httpPut(String url, Map<String, Object> params, NetSingleCallBack callBack) {
         return RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .subscribe(s -> {
@@ -411,7 +367,7 @@ public class RxHttpMag {
      */
     public void httpPut(LifecycleOwner owner, String url, Map<String, Object> params, NetSingleCallBack callBack) {
         RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
@@ -432,12 +388,12 @@ public class RxHttpMag {
      */
     public Observable httpPut(String url) {
         return RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -451,13 +407,13 @@ public class RxHttpMag {
      */
     public Observable httpPut(String url, Map<String, Object> params) {
         return RxHttp.putJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -471,7 +427,7 @@ public class RxHttpMag {
      */
     public Disposable httpDel(String url, NetSingleCallBack callBack) {
         return RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .subscribe(s -> {
                     //请求成功
@@ -490,7 +446,7 @@ public class RxHttpMag {
      */
     public void httpDel(LifecycleOwner owner, String url, NetSingleCallBack callBack) {
         RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
                 .subscribe(s -> {
@@ -512,7 +468,7 @@ public class RxHttpMag {
      */
     public Disposable httpDel(String url, Map<String, Object> params, NetSingleCallBack callBack) {
         return RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .subscribe(s -> {
@@ -533,7 +489,7 @@ public class RxHttpMag {
      */
     public void httpDel(LifecycleOwner owner, String url, Map<String, Object> params, NetSingleCallBack callBack) {
         RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .to(RxLife.asOnMain(owner, Lifecycle.Event.ON_DESTROY)) //感知生命周期，自动关闭请求
@@ -554,12 +510,12 @@ public class RxHttpMag {
      */
     public Observable httpDel(String url) {
         return RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -573,13 +529,13 @@ public class RxHttpMag {
      */
     public Observable httpDel(String url, Map<String, Object> params) {
         return RxHttp.deleteJson(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addAll(params)
                 .asString()
                 .onErrorReturn(new Function<Throwable, String>() {
                     @Override
                     public String apply(Throwable throwable) throws Throwable {
-                        return REQUEST_ERROR_TAG;
+                        return netWorkConfig.getRequestErrorTag();
                     }
                 });
     }
@@ -594,7 +550,7 @@ public class RxHttpMag {
      */
     public Disposable httpFileUpload(String url, Map<String, Object> files, NetFileUploadCallBack uploadCallBack, NetSingleCallBack callBack) {
         return RxHttp.postForm(url) //发送Form表单形式的Post请求
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addFiles(files)
                 .upload(AndroidSchedulers.mainThread(), progress -> {
                     //上传进度回调,0-100，仅在进度有更新时才会回调
@@ -624,7 +580,7 @@ public class RxHttpMag {
      */
     public void httpFileUpload(LifecycleOwner owner, String url, Map<String, Object> file, NetFileUploadCallBack uploadCallBack, NetSingleCallBack callBack) {
         RxHttp.postForm(url) //发送Form表单形式的Post请求
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addFiles(file)
                 .upload(AndroidSchedulers.mainThread(), progress -> {
                     //上传进度回调,0-100，仅在进度有更新时才会回调
@@ -655,7 +611,7 @@ public class RxHttpMag {
      */
     public void httpFileUpload(LifecycleOwner owner, String url,String fileKey,List file, NetFileUploadCallBack uploadCallBack, NetSingleCallBack callBack) {
         RxHttp.postForm(url) //发送Form表单形式的Post请求
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addFiles(fileKey,file)
                 .upload(AndroidSchedulers.mainThread(), progress -> {
                     //上传进度回调,0-100，仅在进度有更新时才会回调
@@ -687,7 +643,7 @@ public class RxHttpMag {
     public void httpFileUpload(LifecycleOwner owner, String url, Map<String, Object> file,Map<String, Object> params, NetFileUploadCallBack uploadCallBack, NetSingleCallBack callBack) {
         List<File> f=new ArrayList<>();
         RxHttp.postForm(url) //发送Form表单形式的Post请求
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .addFiles(file)
                 .addAll(params)
                 .upload(AndroidSchedulers.mainThread(), progress -> {
@@ -718,7 +674,7 @@ public class RxHttpMag {
      */
     public Disposable httpFileDownload(String url, String destPath, NetFileDownloadCallBack downloadCallBack, NetSingleCallBack callBack) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asDownload(destPath, AndroidSchedulers.mainThread(), progress -> {     //第二个参数指定主线程回调
                     //下载进度回调,0-100，仅在进度有更新时才会回调，最多回调101次，最后一次回调文件存储路径
                     int currentProgress = progress.getProgress(); //当前进度 0-100
@@ -746,7 +702,7 @@ public class RxHttpMag {
      */
     public void httpFileDownload(LifecycleOwner owner, String url, String destPath, NetFileDownloadCallBack downloadCallBack, NetSingleCallBack callBack) {
         RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asDownload(destPath, AndroidSchedulers.mainThread(), progress -> {     //第二个参数指定主线程回调
                     //下载进度回调,0-100，仅在进度有更新时才会回调，最多回调101次，最后一次回调文件存储路径
                     int currentProgress = progress.getProgress(); //当前进度 0-100
@@ -774,7 +730,7 @@ public class RxHttpMag {
      */
     public Disposable httpFileAppendDownload(String url, String destPath, NetFileDownloadCallBack downloadCallBack, NetSingleCallBack callBack) {
         return RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asAppendDownload(destPath, AndroidSchedulers.mainThread(), progress -> {     //第二个参数指定主线程回调
                     //下载进度回调,0-100，仅在进度有更新时才会回调，最多回调101次，最后一次回调文件存储路径
                     int currentProgress = progress.getProgress(); //当前进度 0-100
@@ -802,7 +758,7 @@ public class RxHttpMag {
      */
     public void httpFileAppendDownload(LifecycleOwner owner, String url, String destPath, NetFileDownloadCallBack downloadCallBack, NetSingleCallBack callBack) {
         RxHttp.get(url)
-                .addAllHeader(header)
+                .addAllHeader(netWorkConfig.getHeader())
                 .asAppendDownload(destPath, AndroidSchedulers.mainThread(), progress -> {     //第二个参数指定主线程回调
                     //下载进度回调,0-100，仅在进度有更新时才会回调，最多回调101次，最后一次回调文件存储路径
                     int currentProgress = progress.getProgress(); //当前进度 0-100

@@ -41,7 +41,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //本地仓库/远程仓库使用方式
-    implementation 'com.hysz.lib_network:lib_network:0.0.2-SNAPSHOT'
+    implementation 'com.hysz.lib_network:lib_network:0.0.4-SNAPSHOT'
     //aar直接依赖方式
 //    implementation(name: 'lib_network-1.0.0', ext: 'aar')
 

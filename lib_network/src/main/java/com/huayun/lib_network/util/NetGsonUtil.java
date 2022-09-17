@@ -2,7 +2,6 @@ package com.huayun.lib_network.util;
 
 import com.google.gson.Gson;
 import com.huayun.lib_network.base_net.bean.BaseResponse;
-import com.huayun.lib_network.rxhttp.RxHttpMag;
 import com.huayun.lib_tools.util.GsonUtil;
 
 public class NetGsonUtil {
@@ -17,7 +16,7 @@ public class NetGsonUtil {
     public static <T> T netGsonToBean(Object gsonString, Class<T> cls) {
         Gson gson = GsonUtil.getGson();
         T t = null;
-        if (gson != null && !gsonString.toString().equals(RxHttpMag.getInstance().getRequestErrorTag())) {
+        if (gson != null && !gsonString.toString().equals(RxHttpConfig.getInstance().getRequestErrorTag())) {
             BaseResponse baseResponse = gson.fromJson(gsonString.toString(), BaseResponse.class);
             t = gson.fromJson(gson.toJson(baseResponse.data), cls);
         }

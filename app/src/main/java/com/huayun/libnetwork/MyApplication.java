@@ -5,6 +5,7 @@ import android.app.Application;
 import com.huayun.lib_network.annotation.BindRxHttp;
 import com.huayun.lib_network.base_net.call.IHttp;
 import com.huayun.lib_network.rxhttp.RxHttpMag;
+import com.huayun.lib_network.util.RxHttpConfig;
 import com.huayun.lib_tools.util.log.LogUtil;
 import com.huayun.libnetwork.hilt.IApplication;
 
@@ -31,6 +32,10 @@ public class MyApplication extends Application implements IApplication {
     public void onCreate() {
         super.onCreate();
         LogUtil.init(true,"=_=");
-        RxHttpMag.getInstance().init("https://app-api.yidaz.cn/yd-api-member/",false,"");
+        RxHttpConfig.getInstance()
+                .setBaseUrl("https://app-api.yidaz.cn/yd-api-member/")
+                .setIsDebug(false)
+                .setRequestErrorTag("")
+                .init();
     }
 }
