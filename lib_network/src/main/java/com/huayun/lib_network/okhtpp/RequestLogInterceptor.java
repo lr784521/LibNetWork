@@ -1,5 +1,6 @@
 package com.huayun.lib_network.okhtpp;
 
+import com.huayun.lib_network.util.RxHttpConfig;
 import com.huayun.lib_tools.util.log.LogUtil;
 
 import java.io.IOException;
@@ -25,9 +26,13 @@ public class RequestLogInterceptor implements Interceptor {
         Response response = chain.proceed(request);
         ResponseBody responseBody = response.body();
         String responseBodyString = (responseBody == null ? "null" : responseBody.string());
-        LogUtil.xLoge("请求路径结果And返回数据==>" +
-                request.method() + ' ' + request.url() + "  请求头：" + GsonUtil.toJson(request.headers()) + "\n返回结果："+responseBodyString);
-//                request.method() + ' ' + request.url() + "  请求头：" + GsonUtil.toJson(request.headers()) + "\n" + getParam(request) + "\n返回结果："+responseBodyString);
+        if (RxHttpConfig.getInstance().getResultLogShowParam()) {
+            LogUtil.xLoge("请求路径结果And返回数据==>" +
+                    request.method() + ' ' + request.url() + "  请求头：" + GsonUtil.toJson(request.headers()) + "\n" + getParam(request) + "\n返回结果：" + responseBodyString);
+        } else {
+            LogUtil.xLoge("请求路径结果And返回数据==>" +
+                    request.method() + ' ' + request.url() + "  请求头：" + GsonUtil.toJson(request.headers()) + "\n返回结果：" + responseBodyString);
+        }
         return response.newBuilder().body(ResponseBody.create(responseBody == null ? MediaType.parse("application/json") : responseBody.contentType(),
                 responseBodyString.getBytes())).build();
     }
@@ -37,18 +42,23 @@ public class RequestLogInterceptor implements Interceptor {
      */
     private String getParam(Request request) {
         String param = "参数：";
-        String type = request.method();
-        if (type.equals("GET") && request.url().encodedQuery() != null) {//获取get请求的参数
-            String encodedQuery = request.url().encodedQuery();
-            String[] querys = encodedQuery.split("&");
-            Map<String, String> queryMap = new HashMap<>();
-            for (String query : querys) {
-                String[] split = query.split("=");
-                queryMap.put(split[0], split[1]);
+        try {
+            String type = request.method();
+            if (type.equals("GET") && request.url().encodedQuery() != null) {//获取get请求的参数
+                String encodedQuery = request.url().encodedQuery();
+                String[] querys = encodedQuery.split("&");
+                Map<String, String> queryMap = new HashMap<>();
+                for (String query : querys) {
+                    String[] split = query.split("=");
+                    queryMap.put(split[0], split[1]);
+                }
+                param += GsonUtil.toJson(queryMap);
+            } else if (type.equals("POST")) {//获取POST请求的参数
+                param += bodyToString(request);
             }
-            param += GsonUtil.toJson(queryMap);
-        } else if (type.equals("POST")) {//获取POST请求的参数
-            param += bodyToString(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            param+="参数解析异常-如出现崩溃请检查传参是否正确！";
         }
         return param;
     }

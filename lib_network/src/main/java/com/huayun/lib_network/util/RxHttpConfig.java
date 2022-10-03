@@ -35,6 +35,8 @@ public class RxHttpConfig {
     private Map<String, String> header;
     //是否是Debug模式
     private boolean isDebug;
+    //请求返回日志是否打印请求参数
+    private boolean resultLogShowParam;
     //OkHttpClient
     private OkHttpClient okHttpClient;
     public static RxHttpConfig getInstance() {
@@ -138,4 +140,12 @@ public class RxHttpConfig {
         return this;
     }
 
+    public boolean getResultLogShowParam() {
+        return resultLogShowParam;
+    }
+
+    public RxHttpConfig setResultLogShowParam(boolean resultLogShowParam) {
+        this.resultLogShowParam = resultLogShowParam;
+        return this;
+    }
 }
