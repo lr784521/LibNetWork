@@ -14,10 +14,16 @@ apply plugin: 'maven-publish'
 
 def account="lurui"
 def pwd="lr123456"
-def snapshotVersion="0.0.8-SNAPSHOT"
+def snapshotVersion="0.0.10-SNAPSHOT"
 def releaseVersion="0.0.1-RELEASE"
 def pluginGroupId="com.hysz.lib_network"
 def pluginArtifactId="lib_network"
+
+// 用于打包源代码的任务
+task androidSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
+}
 
 afterEvaluate {
     publishing {
@@ -52,12 +58,14 @@ afterEvaluate {
             debugType(MavenPublication) {
                 from components.debug
                 groupId pluginGroupId
+                artifact androidSourcesJar // 增加上传源码的 task
                 artifactId pluginArtifactId
                 version snapshotVersion
             }
             productRelease(MavenPublication) {
                 from components.release
                 groupId pluginGroupId
+                artifact androidSourcesJar // 增加上传源码的 task
                 artifactId pluginArtifactId
                 version releaseVersion
             }
