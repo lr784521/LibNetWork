@@ -2,7 +2,10 @@ package com.huayun.lib_network.util;
 
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 
+import com.huayun.lib_network.base_net.call.NetErrorListener;
 import com.huayun.lib_network.okhttpImpl.OkHttpMag;
 import com.huayun.lib_tools.util.AppGlobalUtils;
 
@@ -39,6 +42,9 @@ public class RxHttpConfig {
     private boolean resultLogShowParam;
     //OkHttpClient
     private OkHttpClient okHttpClient;
+    //网络请求错误回调
+    private NetErrorListener netErrorListener;
+
     public static RxHttpConfig getInstance() {
         if (instance == null) {
             synchronized (RxHttpConfig.class) {
@@ -53,12 +59,12 @@ public class RxHttpConfig {
     /**
      * 初始化默认配置
      */
-    private RxHttpConfig(){
-        errorCode =new ArrayList<>();
-        header=new HashMap<>();
-        okHttpClient=OkHttpMag.getInstance().getOkHttpClient();
-        REQUEST_ERROR_TAG="APP--REQUEST--SERVER--ERROR";
-        cachePath=Environment.getExternalStorageDirectory().getPath()
+    private RxHttpConfig() {
+        errorCode = new ArrayList<>();
+        header = new HashMap<>();
+        okHttpClient = OkHttpMag.getInstance().getOkHttpClient();
+        REQUEST_ERROR_TAG = "APP--REQUEST--SERVER--ERROR";
+        cachePath = Environment.getExternalStorageDirectory().getPath()
                 + "/Android/data/" + AppGlobalUtils.getApplication().getPackageName() + "/cache/";
     }
 
@@ -146,6 +152,15 @@ public class RxHttpConfig {
 
     public RxHttpConfig setResultLogShowParam(boolean resultLogShowParam) {
         this.resultLogShowParam = resultLogShowParam;
+        return this;
+    }
+
+    public NetErrorListener getNetErrorListener() {
+        return netErrorListener;
+    }
+
+    public RxHttpConfig setNetErrorListener(NetErrorListener netErrorListener) {
+        this.netErrorListener = netErrorListener;
         return this;
     }
 }

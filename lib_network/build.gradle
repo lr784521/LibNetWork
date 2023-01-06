@@ -67,8 +67,4 @@ dependencies {
     //依赖注入框架
     implementation "com.google.dagger:hilt-android:2.42"
     annotationProcessor "com.google.dagger:hilt-compiler:2.42"
-
-    //事件通知
-    implementation "org.greenrobot:eventbus:3.3.1"
-
 }
