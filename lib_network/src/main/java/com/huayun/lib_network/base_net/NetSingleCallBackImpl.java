@@ -2,6 +2,7 @@ package com.huayun.lib_network.base_net;
 
 import android.content.Context;
 import android.os.Build;
+
 import com.huayun.lib_network.R;
 import com.huayun.lib_network.base_net.bean.BaseResponse;
 import com.huayun.lib_network.base_net.call.NetSingleCallBack;
@@ -71,7 +72,7 @@ public abstract class NetSingleCallBackImpl<T> implements NetSingleCallBack {
                     T t = (T) tList;
                     NetSingleCallBackImpl.this.onSuccess(t, response.code, response.msg);
                 } else {
-                    if (StringUtil.isBlank(response.data.toString())) {
+                    if (response.data==null || StringUtil.isBlank(response.data.toString())) {
                         //空data
                         NetSingleCallBackImpl.this.onSuccess(null, response.code, response.msg);
                     } else {
@@ -130,9 +131,9 @@ public abstract class NetSingleCallBackImpl<T> implements NetSingleCallBack {
         Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
         String className;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            className=arguments[0].getTypeName();
-        }else {
-            className=arguments[0].toString();
+            className = arguments[0].getTypeName();
+        } else {
+            className = arguments[0].toString();
         }
         if (className.contains("java.util.List")) {
             return List.class;
@@ -153,9 +154,9 @@ public abstract class NetSingleCallBackImpl<T> implements NetSingleCallBack {
         Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
         String className;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            className=arguments[0].getTypeName();
-        }else {
-            className=arguments[0].toString();
+            className = arguments[0].getTypeName();
+        } else {
+            className = arguments[0].toString();
         }
         if (className.contains("java.util.List")) {
             String replace = className.replace("java.util.List<", "").replace(">", "");

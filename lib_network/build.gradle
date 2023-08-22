@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //基础工具库
-    implementation 'com.hysz.lib_tools:lib_tools:0.0.11-SNAPSHOT'
+    implementation 'com.hysz.lib_tools:lib_tools:0.0.15-SNAPSHOT'
     //rxhttp
     implementation "com.github.liujingxing.rxhttp:rxhttp:2.9.0"
     annotationProcessor "com.github.liujingxing.rxhttp:rxhttp-compiler:2.9.0"

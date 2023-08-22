@@ -50,7 +50,11 @@ public class RequestLogInterceptor implements Interceptor {
                 Map<String, String> queryMap = new HashMap<>();
                 for (String query : querys) {
                     String[] split = query.split("=");
-                    queryMap.put(split[0], split[1]);
+                    if (split.length == 2) {
+                        queryMap.put(split[0], split[1]);
+                    } else {
+                        queryMap.put(split[0], "");
+                    }
                 }
                 param += GsonUtil.toJson(queryMap);
             } else if (type.equals("POST")) {//获取POST请求的参数
@@ -58,7 +62,7 @@ public class RequestLogInterceptor implements Interceptor {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            param+="参数解析异常-如出现崩溃请检查传参是否正确！";
+            param += "参数解析异常-如出现崩溃请检查传参是否正确！";
         }
         return param;
     }

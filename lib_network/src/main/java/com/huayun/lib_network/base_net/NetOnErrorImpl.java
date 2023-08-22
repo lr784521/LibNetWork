@@ -23,6 +23,7 @@ public class NetOnErrorImpl {
         String tipsMsg = "";
         LogUtil.xLoge("请求错误Throwable==>" + e.toString());
         if (!NetworkUtils.isNetworkAvailable(AppGlobalUtils.getApplication())) {
+            callBack.result(e.toString(), "请检查网络是否连接", ServerCode.CODE_ERROR_CODE);
             //网络连接断开
             return;
         }
