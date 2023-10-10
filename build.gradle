@@ -34,7 +34,6 @@ allprojects {
             allowInsecureProtocol = true
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
-
 //        maven {
 //            allowInsecureProtocol = true
 //            credentials {
