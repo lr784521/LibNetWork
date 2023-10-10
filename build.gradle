@@ -34,14 +34,14 @@ allprojects {
             allowInsecureProtocol = true
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
-        maven {
-            allowInsecureProtocol = true
-            credentials {
-                username "lurui"
-                password "lr123456"
-            }
-            url 'http://nexus.ops.hyszsz.com/repository/android-plugin-public/'
-        }
+//        maven {
+//            allowInsecureProtocol = true
+//            credentials {
+//                username "lurui"
+//                password "lr123456"
+//            }
+//            url 'http://nexus.ops.hyszsz.com/repository/android-plugin-public/'
+//        }
         //必须添加 否则依赖aar文件后 无法访问内容
         flatDir {
             dirs 'libs'
